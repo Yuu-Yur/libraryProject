@@ -19,8 +19,10 @@ public class Book {
 
     private String title;
     private String description;
-    private Double avrRating;
+    private Float avrRating;
     private Date releaseDate;
+    private String kdc;
+
     private Date returnDate;
 
     @ManyToMany(fetch = FetchType.LAZY)
