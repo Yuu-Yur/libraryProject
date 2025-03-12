@@ -7,11 +7,15 @@ import com.yuryuu.libraryproject.domain.QAuthor;
 import com.yuryuu.libraryproject.domain.QBook;
 import com.yuryuu.libraryproject.domain.QPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.List;
 
+@Repository
 public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implements BookSearchRepository {
 
     public BookSearchRepositoryImpl() {super(Book.class);}
@@ -49,16 +53,10 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
             booleanBuilder.and(book.kdc.startsWith(KDC));
         }
         query.where(booleanBuilder);
-        //todo dto 로 변환해 줄지, entity 로 그대로 나갈지 고민 필요
-//        // 이렇게 형변환 한 query 에 pagination 적용
-//        this.getQuerydsl().applyPagination(pageable, dtoQuery);
-//
-//        // pagination 적용 된 query 실행해서 데이터를 list 로 받기
-//        List<BoardListReplyCountDTO> dtoList = dtoQuery.fetch();
-//        // count 로 총 갯수 받기
-//        long total = dtoQuery.fetchCount();
-//        // Page 타입(데이터 , 페이지형식, 총 갯수)에 담아서 return
-//        return new PageImpl<BoardListReplyCountDTO>(dtoList, pageable, total);
-        return null;
+
+        this.getQuerydsl().applyPagination(pageable, query);
+        List<Book> entityList = query.fetch();
+        long total = query.fetchCount();
+        return new PageImpl<Book>(entityList, pageable, total);
     }
 }
