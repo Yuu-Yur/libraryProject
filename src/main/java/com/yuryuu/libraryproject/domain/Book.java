@@ -29,11 +29,8 @@ public class Book {
     private Set<Author> authors;
     @ManyToOne(fetch = FetchType.LAZY)
     private Publisher publisher;
-    @OneToMany(fetch = FetchType.LAZY)
-    private Set<Review> reviews;
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
     @OneToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
-
 }
