@@ -11,9 +11,7 @@ import com.yuryuu.libraryproject.repository.publisher.PublisherRepository;
 import com.yuryuu.libraryproject.repository.reservation.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +28,6 @@ public class BookServiceImpl implements BookService {
     private final PublisherRepository publisherRepository;
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
-    private final ModelMapper modelMapper;
 
     private Book convertToBook(BookDTO bookDTO) {
         Set<Author> authors = new HashSet<>(authorRepository.findAllById(bookDTO.getAuthorNos()));
@@ -105,7 +102,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PageResponseDTO<BookDTO> getNewBook(PageRequestDTO pageRequestDTO) {
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize());
+        Pageable pageable = pageRequestDTO.getPageable();
         Page<Book> result = bookRepository.newest(pageable);
         List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
         return PageResponseDTO.<BookDTO>builder()
@@ -117,6 +114,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PageResponseDTO<BookDTO> searchBooks(PageRequestDTO pageRequestDTO) {
-        return null;
+        String[] types = pageRequestDTO.getTypes();
+        String q = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable();
+        Page<Book> result = bookRepository.search(types, q, pageRequestDTO.getRating(), pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate(), pageRequestDTO.getKdc(), pageable);
+        List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
+        return PageResponseDTO.<BookDTO>builder()
+                .total((int)result.getTotalElements())
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
     }
 }

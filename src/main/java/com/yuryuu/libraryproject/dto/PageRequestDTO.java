@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 
 @Data
 @ToString
@@ -20,6 +22,14 @@ public class PageRequestDTO {
     private String type;
     private String keyword;
     private String link;
+    @Builder.Default
+    private int rating = 0;
+    @Builder.Default
+    private Date startDate = null;
+    @Builder.Default
+    private Date endDate = null;
+    @Builder.Default
+    private String kdc = null;
 
     public String[] getTypes() {
         if (type == null || type.isEmpty()) {
@@ -46,7 +56,7 @@ public class PageRequestDTO {
             }
             if (keyword != null && !keyword.isEmpty()) {
                 try {
-                    builder.append("&keyword=").append(URLEncoder.encode(keyword));
+                    builder.append("&keyword=").append(URLEncoder.encode(keyword, StandardCharsets.UTF_8));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

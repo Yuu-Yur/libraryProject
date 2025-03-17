@@ -21,7 +21,7 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
     public BookSearchRepositoryImpl() {super(Book.class);}
 
     @Override
-    public Page<Book> search(String[] types, String q, Integer rating, Date startDate, Date endDate, String KDC, Pageable pageable) {
+    public Page<Book> search(String[] types, String q, int rating, Date startDate, Date endDate, String kdc, Pageable pageable) {
         QBook book = QBook.book;
         QAuthor author = QAuthor.author;
         QPublisher publisher = QPublisher.publisher;
@@ -43,14 +43,14 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
                 }
             }
         }
-        if (rating != null) {
+        if (rating > 0) {
             booleanBuilder.and(book.avrRating.goe(rating));
         }
         if (startDate != null && endDate != null) {
             booleanBuilder.and(book.releaseDate.between(startDate, endDate));
         }
-        if (KDC != null) {
-            booleanBuilder.and(book.kdc.startsWith(KDC));
+        if (kdc != null) {
+            booleanBuilder.and(book.kdc.startsWith(kdc));
         }
         query.where(booleanBuilder);
 
