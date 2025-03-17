@@ -22,14 +22,10 @@ public class PageRequestDTO {
     private String type;
     private String keyword;
     private String link;
-    @Builder.Default
-    private int rating = 0;
-    @Builder.Default
-    private Date startDate = null;
-    @Builder.Default
-    private Date endDate = null;
-    @Builder.Default
-    private String kdc = null;
+    private Integer rating;
+    private Date startDate;
+    private Date endDate;
+    private String kdc;
 
     public String[] getTypes() {
         if (type == null || type.isEmpty()) {
@@ -60,6 +56,18 @@ public class PageRequestDTO {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+            if (rating != null && !(rating == 0)) {
+                builder.append("&rating=").append(rating);
+            }
+            if (startDate != null) {
+                builder.append("&sDate=").append(startDate);
+            }
+            if (endDate != null) {
+                builder.append("&eDate=").append(endDate);
+            }
+            if (kdc != null && !kdc.isEmpty()) {
+                builder.append("&kdc=").append(kdc);
             }
             link = builder.toString();
         }
