@@ -45,8 +45,6 @@ public class BookServiceImpl implements BookService {
         Publisher publisher = publisherRepository.findById(bookDTO.getPublisherNo()).orElseThrow(() ->new EntityNotFoundException("Publisher not found"));
         return Book.builder()
                 .title(bookDTO.getTitle())
-                .description(bookDTO.getDescription())
-                .description(bookDTO.getDescription())
                 .avrRating(bookDTO.getAvrRating())
                 .releaseDate(bookDTO.getReleaseDate())
                 .kdc(bookDTO.getKdc())
@@ -61,7 +59,6 @@ public class BookServiceImpl implements BookService {
         return BookDTO.builder()
                 .bookNo(book.getBookNo())
                 .title(book.getTitle())
-                .description(book.getDescription())
                 .avrRating(book.getAvrRating())
                 .releaseDate(book.getReleaseDate())
                 .kdc(book.getKdc())
@@ -117,7 +114,7 @@ public class BookServiceImpl implements BookService {
         String[] types = pageRequestDTO.getTypes();
         String q = pageRequestDTO.getKeyword();
         Pageable pageable = pageRequestDTO.getPageable();
-        Page<Book> result = bookRepository.search(types, q, pageRequestDTO.getRating(), pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate(), pageRequestDTO.getKdc(), pageable);
+        Page<Book> result = bookRepository.search(types, q, pageRequestDTO.getRating(), pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate(), pageRequestDTO.getKdc(), pageRequestDTO.getIsbn(), pageable);
         List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
         return PageResponseDTO.<BookDTO>builder()
                 .total((int)result.getTotalElements())

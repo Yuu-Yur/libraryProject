@@ -27,6 +27,8 @@ public class BookDTO {
     private Date releaseDate;
     @NotEmpty
     private String kdc;
+    @NotEmpty
+    private String isbn;
 
     private Date returnDate;
     // 작가 필요

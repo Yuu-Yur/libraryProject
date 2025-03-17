@@ -26,6 +26,7 @@ public class PageRequestDTO {
     private Date startDate;
     private Date endDate;
     private String kdc;
+    private String isbn;
 
     public String[] getTypes() {
         if (type == null || type.isEmpty()) {
@@ -68,6 +69,9 @@ public class PageRequestDTO {
             }
             if (kdc != null && !kdc.isEmpty()) {
                 builder.append("&kdc=").append(kdc);
+            }
+            if (isbn != null && !isbn.isEmpty()) {
+                builder.append("&isbn=").append(isbn);
             }
             link = builder.toString();
         }

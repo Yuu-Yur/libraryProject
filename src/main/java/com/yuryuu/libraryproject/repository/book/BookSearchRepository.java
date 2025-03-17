@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 import java.sql.Date;
 
 public interface BookSearchRepository {
-    Page<Book> search(String[] types, String q, int rating, Date startDate, Date endDate, String kdc, Pageable pageable);
+    Page<Book> search(String[] types, String q, int rating, Date startDate, Date endDate, String kdc, String isbn, Pageable pageable);
 }

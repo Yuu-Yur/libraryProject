@@ -59,6 +59,8 @@ dependencies {
     // validation
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.0'
 
+    // openCSV
+    implementation 'com.opencsv:opencsv:5.6'
 
 }
 

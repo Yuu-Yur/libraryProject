@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-class DbInsertBookDTO {
+public class DbInsertBookDTO {
     @JsonProperty("PUBLISHER")
     private String publisher;
 

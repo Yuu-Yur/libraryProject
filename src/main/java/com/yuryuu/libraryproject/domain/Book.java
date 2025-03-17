@@ -18,10 +18,11 @@ public class Book {
     private Long bookNo;
 
     private String title;
-    private String description;
-    private Float avrRating;
     private Date releaseDate;
     private String kdc;
+    private String isbn;
+
+    private Float avrRating;
 
     private Date returnDate;
 
