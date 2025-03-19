@@ -46,6 +46,7 @@ public class BookServiceImpl implements BookService {
         }
         Publisher publisher = publisherRepository.findById(bookDTO.getPublisherNo()).orElseThrow(() ->new EntityNotFoundException("Publisher not found"));
         return Book.builder()
+                .bookNo(bookDTO.getBookNo())
                 .title(bookDTO.getTitle())
                 .avrRating(bookDTO.getAvrRating())
                 .releaseDate(bookDTO.getReleaseDate())

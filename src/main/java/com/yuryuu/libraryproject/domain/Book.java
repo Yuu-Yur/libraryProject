@@ -33,7 +33,7 @@ public class Book {
     private Publisher publisher;
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     private Reservation reservation;
 
     public void changeAuthors(Set<Author> authors) {

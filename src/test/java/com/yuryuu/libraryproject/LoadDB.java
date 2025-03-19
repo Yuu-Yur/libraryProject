@@ -42,7 +42,7 @@ public class LoadDB {
     private BookService bookService;
 
 
-    @Test
+
     @Transactional
     void contextLoads() throws FileNotFoundException {
         // CSV 파일 경로 설정
