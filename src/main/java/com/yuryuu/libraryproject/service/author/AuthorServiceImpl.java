@@ -66,7 +66,7 @@ public class AuthorServiceImpl implements AuthorService{
 
     @Override
     public AuthorDTO getAuthor(Long authorNo) {
-        Author author = authorRepository.findById(authorNo).orElseThrow(() ->new EntityNotFoundException("Book not found"));
+        Author author = authorRepository.findById(authorNo).orElseThrow(() ->new EntityNotFoundException("Author not found"));
         return convertToAuthorDTO(author);
     }
 }

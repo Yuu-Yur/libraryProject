@@ -1,4 +1,4 @@
-package com.yuryuu.libraryproject.domain;
+package com.yuryuu.libraryproject.dto.publisher;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -6,22 +6,18 @@ import lombok.*;
 
 import java.util.Set;
 
-@Entity
-@Getter
-@Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @ToString
-public class Publisher {
+public class PublisherDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long publisherNo;
+
     @NotBlank
     private String publisherName;
     @OneToMany(fetch = FetchType.LAZY)
-    private Set<Book> books;
-
-    public void changeBooks(Set<Book> books) {
-        this.books = books;
-    }
+    private Set<Long> bookNos;
 }
