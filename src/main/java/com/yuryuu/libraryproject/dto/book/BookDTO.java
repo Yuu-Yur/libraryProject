@@ -1,6 +1,6 @@
 package com.yuryuu.libraryproject.dto.book;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -14,18 +14,18 @@ import java.util.Set;
 @Builder
 @ToString
 public class BookDTO {
-    // 기본 책 정보들
+    // ru용 DTO
     private Long bookNo;
 
-    @NotEmpty
+    @NotBlank
     private String title;
     @Builder.Default
     private Float avrRating = 0.0f;
-    @NotEmpty
+    @NotBlank
     private Date releaseDate;
-    @NotEmpty
+    @NotBlank
     private String kdc;
-    @NotEmpty
+    @NotBlank
     private String isbn;
 
     private Date returnDate;

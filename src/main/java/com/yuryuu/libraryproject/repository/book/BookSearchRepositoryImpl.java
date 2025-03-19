@@ -56,8 +56,9 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
             booleanBuilder.and(book.isbn.startsWith(isbn));
         }
         query.where(booleanBuilder);
-
-        this.getQuerydsl().applyPagination(pageable, query);
+        if (pageable != null) {
+            this.getQuerydsl().applyPagination(pageable, query);
+        }
         List<Book> entityList = query.fetch();
         long total = query.fetchCount();
         return new PageImpl<Book>(entityList, pageable, total);
