@@ -2,19 +2,16 @@ package com.yuryuu.libraryproject.dto.book;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
-
-import java.sql.Date;
-import java.util.Set;
-
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
-public class BookDTO {
-    // 기본 책 정보들
+public class BookStringDTO {
+    // crud 용 DTO
     private Long bookNo;
 
     @NotEmpty
@@ -22,21 +19,17 @@ public class BookDTO {
     @Builder.Default
     private Float avrRating = 0.0f;
     @NotEmpty
-    private Date releaseDate;
+    @Pattern(regexp = "^[0-9]{4}$", message = "Release date must be a 4-digit number")
+    private String releaseDate;
     @NotEmpty
     private String kdc;
     @NotEmpty
     private String isbn;
 
-    private Date returnDate;
-    // 작가 필요
+
     @NotNull
-    private Set<Long> authorNos;
-    // 출판사 필요
+    private String authors;
+
     @NotNull
-    private Long publisherNo;
-    // 멤버 필수아님
-    private Long memberNo;
-    // 예약번호도 필수 아님
-    private Long reservationNo;
+    private String publisher;
 }

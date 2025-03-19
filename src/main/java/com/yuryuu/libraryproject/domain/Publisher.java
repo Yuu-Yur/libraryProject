@@ -19,4 +19,8 @@ public class Publisher {
     private String publisherName;
     @OneToMany(fetch = FetchType.LAZY)
     private Set<Book> books;
+
+    public void changeBooks(Set<Book> books) {
+        this.books = books;
+    }
 }
