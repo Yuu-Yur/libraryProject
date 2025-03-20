@@ -7,4 +7,5 @@ public interface PublisherService {
     Boolean updatePublisher(PublisherDTO publisherDTO);
     void deletePublisher(Long publisherNo);
     PublisherDTO getPublisher(Long publisherNo);
+    void addBookToPublisher(Long bookNo, Long publisherNo);
 }

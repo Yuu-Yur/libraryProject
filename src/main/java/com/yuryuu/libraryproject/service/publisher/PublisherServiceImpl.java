@@ -7,7 +7,6 @@ import com.yuryuu.libraryproject.repository.book.BookRepository;
 import com.yuryuu.libraryproject.repository.publisher.PublisherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -21,20 +20,12 @@ public class PublisherServiceImpl implements PublisherService {
     private final BookRepository bookRepository;
 
     private Publisher convertToPublisher(PublisherDTO publisherDTO) {
-        Set<Book> books = null;
-        if (publisherDTO.getPublisherNo() == null) {
-            String publisherName = publisherDTO.getPublisherName();
-            String[] types = {"p"};
-            Page<Book> result = bookRepository.search(types, publisherName, 0, null, null, null, null, null);
-            books = new HashSet<>(result.getContent());
-        } else {
-            books = new HashSet<>(bookRepository.findAllById(publisherDTO.getBookNos()));
-        }
-        return Publisher.builder()
-                .publisherNo(publisherDTO.getPublisherNo())
-                .publisherName(publisherDTO.getPublisherName())
-                .books(books)
-                .build();
+        Set<Book> books = new HashSet<>(bookRepository.findAllById(publisherDTO.getBookNos()));
+            return Publisher.builder()
+                    .publisherNo(publisherDTO.getPublisherNo())
+                    .publisherName(publisherDTO.getPublisherName())
+                    .books(books)
+                    .build();
     }
     private PublisherDTO convertToPublisherDTO(Publisher publisher) {
         return PublisherDTO.builder()
@@ -67,5 +58,13 @@ public class PublisherServiceImpl implements PublisherService {
     public PublisherDTO getPublisher(Long publisherNo) {
         Publisher publisher = publisherRepository.findById(publisherNo).orElseThrow(()-> new EntityNotFoundException("publisher not found"));
         return convertToPublisherDTO(publisher);
+    }
+
+    @Override
+    public void addBookToPublisher(Long bookNo, Long publisherNo) {
+        Publisher p = publisherRepository.findById(publisherNo).orElseThrow(() -> new EntityNotFoundException("publisher not found"));
+        Book b = bookRepository.findById(bookNo).orElseThrow(() -> new EntityNotFoundException("book not found"));
+        p.getBooks().add(b);
+        publisherRepository.save(p);
     }
 }

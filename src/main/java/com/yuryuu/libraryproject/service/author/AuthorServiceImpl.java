@@ -7,7 +7,6 @@ import com.yuryuu.libraryproject.repository.author.AuthorRepository;
 import com.yuryuu.libraryproject.repository.book.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -22,21 +21,13 @@ public class AuthorServiceImpl implements AuthorService{
     private final BookRepository bookRepository;
 
     private Author convertToAuthor(AuthorDTO authorDTO) {
-        Set<Book> books = null;
-        if (authorDTO.getAuthorNo() == null) {
-            String authorName = authorDTO.getAuthorName();
-            String[] types = {"a"};
-            Page<Book> result = bookRepository.search(types, authorName, 0, null, null, null, null, null);
-            books = new HashSet<>(result.getContent());
-            return Author.builder()
-                    .authorNo(authorDTO.getAuthorNo())
-                    .authorName(authorDTO.getAuthorName())
-                    .books(books)
-                    .build();
-        } else {
-            return authorRepository.findById(authorDTO.getAuthorNo()).get();
-        }
-
+        // 사실상 편집용, 추가시엔 그냥 빈 해시셋임
+        Set<Book> books = new HashSet<>(bookRepository.findAllById(authorDTO.getBookNos()));
+        return Author.builder()
+                .authorNo(authorDTO.getAuthorNo())
+                .authorName(authorDTO.getAuthorName())
+                .books(books)
+                .build();
     }
     private AuthorDTO convertToAuthorDTO(Author author) {
         return AuthorDTO.builder()
@@ -71,5 +62,13 @@ public class AuthorServiceImpl implements AuthorService{
     public AuthorDTO getAuthor(Long authorNo) {
         Author author = authorRepository.findById(authorNo).orElseThrow(() ->new EntityNotFoundException("Author not found"));
         return convertToAuthorDTO(author);
+    }
+
+    @Override
+    public void addBookToAuthor(Long authorNo, Long bookNo) {
+        Author a =authorRepository.findById(authorNo).orElseThrow(()->new EntityNotFoundException("Author not found"));
+        Book b =bookRepository.findById(bookNo).orElseThrow(()->new EntityNotFoundException("Book not found"));
+        a.getBooks().add(b);
+        authorRepository.save(a);
     }
 }

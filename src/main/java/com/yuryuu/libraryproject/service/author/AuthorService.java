@@ -7,4 +7,5 @@ public interface AuthorService {
     Boolean updateAuthor(AuthorDTO authorDTO);
     void deleteAuthor(Long authorNo);
     AuthorDTO getAuthor(Long authorNo);
+    void addBookToAuthor(Long authorNo, Long bookNo);
 }

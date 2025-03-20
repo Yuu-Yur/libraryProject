@@ -1,23 +1,18 @@
-package com.yuryuu.libraryproject.domain;
+package com.yuryuu.libraryproject.dto.request;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.sql.Date;
 import java.util.Set;
 
-@Entity
-@Getter
-@Builder
+@Data
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class Request {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Builder
+public class RequestDTO {
     private Long requestNo;
-
     @NotBlank
     private String title;
     @NotBlank
@@ -25,6 +20,5 @@ public class Request {
     private String publisher;
     private Date releaseDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Member> members;
+    private Set<Long> memberNos;
 }
