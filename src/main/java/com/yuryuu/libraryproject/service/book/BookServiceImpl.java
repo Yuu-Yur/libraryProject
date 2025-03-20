@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -33,31 +34,33 @@ public class BookServiceImpl implements BookService {
     private final ReservationRepository reservationRepository;
 
     private Book convertToBook(BookDTO bookDTO) {
-        Set<Author> authors = new HashSet<>(authorRepository.findAllById(bookDTO.getAuthorNos()));
-        if (authors.size() != bookDTO.getAuthorNos().size()) {
-            throw new EntityNotFoundException("Some authors not found");
-        }
-        Member member = null;
-        Reservation reservation = null;
-        if (bookDTO.getMemberNo() != null) {
-            member = memberRepository.findById(bookDTO.getMemberNo()).orElseThrow(() -> new EntityNotFoundException("Member not found"));
-        }
-        if (bookDTO.getReservationNo() != null) {
-            reservation = reservationRepository.findById(bookDTO.getReservationNo()).orElseThrow(() ->new EntityNotFoundException("Reservation not found"));
-        }
-        Publisher publisher = publisherRepository.findById(bookDTO.getPublisherNo()).orElseThrow(() ->new EntityNotFoundException("Publisher not found"));
-        return Book.builder()
-                .bookNo(bookDTO.getBookNo())
-                .title(bookDTO.getTitle())
-                .avrRating(bookDTO.getAvrRating())
-                .releaseDate(bookDTO.getReleaseDate())
-                .kdc(bookDTO.getKdc())
-                .returnDate(bookDTO.getReturnDate())
-                .authors(authors)
-                .publisher(publisher)
-                .member(member)
-                .reservation(reservation)
-                .build();
+        // 사실상 편집용
+            Set<Author> authors = new HashSet<>(authorRepository.findAllById(bookDTO.getAuthorNos()));
+            if (authors.size() != bookDTO.getAuthorNos().size()) {
+                throw new EntityNotFoundException("Some authors not found");
+            }
+            Publisher publisher = publisherRepository.findById(bookDTO.getPublisherNo()).orElseThrow(() -> new EntityNotFoundException("Publisher not found"));
+
+            Member member = null;
+            Reservation reservation = null;
+            if (bookDTO.getMemberNo() != null) {
+                member = memberRepository.findById(bookDTO.getMemberNo()).orElseThrow(() -> new EntityNotFoundException("Member not found"));
+            }
+            if (bookDTO.getReservationNo() != null) {
+                reservation = reservationRepository.findById(bookDTO.getReservationNo()).orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
+            }
+            return Book.builder()
+                    .bookNo(bookDTO.getBookNo())
+                    .title(bookDTO.getTitle())
+                    .avrRating(bookDTO.getAvrRating())
+                    .releaseDate(bookDTO.getReleaseDate())
+                    .kdc(bookDTO.getKdc())
+                    .returnDate(bookDTO.getReturnDate())
+                    .authors(authors)
+                    .publisher(publisher)
+                    .member(member)
+                    .reservation(reservation)
+                    .build();
     }
     private BookDTO convertToBookDTO(Book book) {
         return BookDTO.builder()
@@ -75,6 +78,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public Boolean addBook(BookStringDTO bookStringDTO) throws EntityNotFoundException {
         if (bookStringDTO.getBookNo() != null) return false;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -82,10 +86,9 @@ public class BookServiceImpl implements BookService {
         Set<String> existingAuthorNames = new HashSet<>();
         authorRepository.findAll().forEach(author -> existingAuthorNames.add(author.getAuthorName()));
 
-        // publisher 조회
         Set<String> existingPublisherNames = new HashSet<>();
         publisherRepository.findAll().forEach(pub -> existingPublisherNames.add(pub.getPublisherName()));
-            // CSV의 각 행을 Book 객체로 매핑
+
             String title = bookStringDTO.getTitle();
             String authorsString = bookStringDTO.getAuthors();
             String publisher = bookStringDTO.getPublisher();
