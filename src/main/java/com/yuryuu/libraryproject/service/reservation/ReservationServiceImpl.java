@@ -5,6 +5,7 @@ import com.yuryuu.libraryproject.dto.reservation.ReservationDTO;
 import com.yuryuu.libraryproject.repository.book.BookRepository;
 import com.yuryuu.libraryproject.repository.member.MemberRepository;
 import com.yuryuu.libraryproject.repository.reservation.ReservationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,22 +33,30 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Boolean addReservation(ReservationDTO reservationDTO) {
-        //Todo 여기부터
-        return null;
+        if (reservationDTO.getReservationNo() != null) return false;
+        Reservation reservation = convertToReservation(reservationDTO);
+        bookRepository.findById(reservationDTO.getBookNo()).ifPresent(book -> {book.reserveBook(reservation);});
+        memberRepository.findById(reservationDTO.getMemberNo()).ifPresent(member -> {member.reserveBook(reservation);});
+        reservationRepository.save(reservation);
+        return true;
     }
 
     @Override
     public Boolean editReservation(ReservationDTO reservationDTO) {
-        return null;
+        if (reservationDTO.getReservationNo() == null) return false;
+        Reservation reservation = convertToReservation(reservationDTO);
+        Reservation result = reservationRepository.save(reservation);
+        return result.getReservationNo().equals(reservation.getReservationNo());
     }
 
     @Override
-    public Boolean deleteReservation(Long reservationNo) {
-        return null;
+    public void deleteReservation(Long reservationNo) {
+        reservationRepository.deleteById(reservationNo);
     }
 
     @Override
-    public Boolean checkReservation(Long reservationNo) {
-        return null;
+    public ReservationDTO getReservation(Long reservationNo) {
+        Reservation result = reservationRepository.findById(reservationNo).orElseThrow(()-> new EntityNotFoundException("reservation not found"));
+        return convertToReservationDTO(result);
     }
 }

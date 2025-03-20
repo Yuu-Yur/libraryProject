@@ -28,14 +28,15 @@ public class AuthorServiceImpl implements AuthorService{
             String[] types = {"a"};
             Page<Book> result = bookRepository.search(types, authorName, 0, null, null, null, null, null);
             books = new HashSet<>(result.getContent());
+            return Author.builder()
+                    .authorNo(authorDTO.getAuthorNo())
+                    .authorName(authorDTO.getAuthorName())
+                    .books(books)
+                    .build();
         } else {
-            books = new HashSet<>(bookRepository.findAllById(authorDTO.getBookNos()));
+            return authorRepository.findById(authorDTO.getAuthorNo()).get();
         }
-        return Author.builder()
-                .authorNo(authorDTO.getAuthorNo())
-                .authorName(authorDTO.getAuthorName())
-                .books(books)
-                .build();
+
     }
     private AuthorDTO convertToAuthorDTO(Author author) {
         return AuthorDTO.builder()
@@ -46,14 +47,16 @@ public class AuthorServiceImpl implements AuthorService{
     }
 
     @Override
-    public String addAuthor(AuthorDTO authorDTO) {
+    public Boolean addAuthor(AuthorDTO authorDTO) {
+        if (authorDTO.getAuthorNo() != null) return false;
         Author author = convertToAuthor(authorDTO);
         Author result = authorRepository.save(author);
-        return result.getAuthorName();
+        return result.getAuthorName().equals(authorDTO.getAuthorName());
     }
 
     @Override
     public Boolean updateAuthor(AuthorDTO authorDTO) {
+        if (authorDTO.getAuthorNo() == null) return false;
         Author author = convertToAuthor(authorDTO);
         Author result = authorRepository.save(author);
         return result.getAuthorName().equals(authorDTO.getAuthorName());

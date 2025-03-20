@@ -1,9 +1,7 @@
 package com.yuryuu.libraryproject.service.publisher;
 
-import com.yuryuu.libraryproject.domain.Author;
 import com.yuryuu.libraryproject.domain.Book;
 import com.yuryuu.libraryproject.domain.Publisher;
-import com.yuryuu.libraryproject.dto.author.AuthorDTO;
 import com.yuryuu.libraryproject.dto.publisher.PublisherDTO;
 import com.yuryuu.libraryproject.repository.book.BookRepository;
 import com.yuryuu.libraryproject.repository.publisher.PublisherRepository;
@@ -47,13 +45,15 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public String addPublisher(PublisherDTO publisherDTO) {
+    public Boolean addPublisher(PublisherDTO publisherDTO) {
+        if (publisherDTO.getPublisherNo() != null) return false;
         Publisher result = publisherRepository.save(convertToPublisher(publisherDTO));
-        return result.getPublisherName();
+        return result.getPublisherName().equals(publisherDTO.getPublisherName());
     }
 
     @Override
     public Boolean updatePublisher(PublisherDTO publisherDTO) {
+        if (publisherDTO.getPublisherNo() == null) return false;
         Publisher result = publisherRepository.save(convertToPublisher(publisherDTO));
         return result.getPublisherName().equals(publisherDTO.getPublisherName());
     }

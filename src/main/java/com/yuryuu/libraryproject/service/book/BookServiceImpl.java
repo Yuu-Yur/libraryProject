@@ -75,7 +75,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public String addBook(BookStringDTO bookStringDTO) throws EntityNotFoundException {
+    public Boolean addBook(BookStringDTO bookStringDTO) throws EntityNotFoundException {
+        if (bookStringDTO.getBookNo() != null) return false;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         Set<String> existingAuthorNames = new HashSet<>();
@@ -95,7 +96,7 @@ public class BookServiceImpl implements BookService {
             // 가장 먼저, 책이 이미 있으면 넘겨야함
             Optional<Book> optionalBook = bookRepository.findByTitle(title);
             if (optionalBook.isPresent()) {
-                return "already exists";
+                return false;
             }
             Book b = optionalBook.orElseGet(() -> bookRepository.save(Book.builder()
                     .title(title)
@@ -135,11 +136,12 @@ public class BookServiceImpl implements BookService {
             b.getAuthors().addAll(authors);
             p.getBooks().add(b);
             authors.forEach(author -> author.getBooks().add(b));
-            return b.getTitle();
+            return true;
     }
 
     @Override
     public Boolean updateBook(BookDTO bookDTO) throws EntityNotFoundException {
+        if (bookDTO.getBookNo() == null) return false;
         Book book = convertToBook(bookDTO);
         Book result = bookRepository.save(book);
         return result.getBookNo() != null;

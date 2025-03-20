@@ -23,4 +23,8 @@ public class Member {
     private Set<Review> reviews;
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Request> requests;
+
+    public void reserveBook(Reservation reservation) {
+        this.reservations.add(reservation);
+    }
 }
