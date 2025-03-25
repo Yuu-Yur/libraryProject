@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @ToString
 public class PageResponseDTO<E> {
-    private int total;
+    private long total;
     private int page;
     private int size;
     private int start; // 한 화면에 보일 첫 페이지
@@ -21,7 +21,7 @@ public class PageResponseDTO<E> {
     private int pageSize;
 
     @Builder
-    public PageResponseDTO(List<E> dtoList, int total, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO(List<E> dtoList, long total, PageRequestDTO pageRequestDTO) {
         this.total = total;
         this.page = pageRequestDTO.getPage();
         this.size = pageRequestDTO.getSize();

@@ -1,6 +1,8 @@
 package com.yuryuu.libraryproject.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.sql.Date;
@@ -17,13 +19,17 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookNo;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
+    @NotBlank
     private String title;
+    @NotNull
     private Date releaseDate;
+    @NotBlank
     private String kdc;
+    @NotBlank
     private String isbn;
 
-    private Float avrRating;
+    private Float avgRating;
 
     private Date returnDate;
 
@@ -35,6 +41,8 @@ public class Book {
     private Member member;
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     private Reservation reservation;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<Review> reviews;
 
     public void changeAuthors(Set<Author> authors) {
         this.authors = authors;
@@ -55,5 +63,8 @@ public class Book {
     }
     public void resetBookReservation() {
         this.reservation = null;
+    }
+    public void changeAvgRating(Float avgRating) {
+        this.avgRating = avgRating;
     }
 }

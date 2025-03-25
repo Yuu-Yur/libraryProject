@@ -27,7 +27,7 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
         QPublisher publisher = QPublisher.publisher;
         JPQLQuery<Book> query = from(book);
         query.leftJoin(book.authors, author);
-        query.leftJoin(publisher).on(book.publisher.publisherNo.eq(publisher.publisherNo));
+        query.leftJoin(book.publisher, publisher);
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (types != null && types.length > 0 && q != null) {
             for (String type : types) {

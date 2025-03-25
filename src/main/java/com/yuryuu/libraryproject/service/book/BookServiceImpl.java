@@ -52,7 +52,7 @@ public class BookServiceImpl implements BookService {
             return Book.builder()
                     .bookNo(bookDTO.getBookNo())
                     .title(bookDTO.getTitle())
-                    .avrRating(bookDTO.getAvrRating())
+                    .avgRating(bookDTO.getAvrRating())
                     .releaseDate(bookDTO.getReleaseDate())
                     .kdc(bookDTO.getKdc())
                     .returnDate(bookDTO.getReturnDate())
@@ -66,7 +66,7 @@ public class BookServiceImpl implements BookService {
         return BookDTO.builder()
                 .bookNo(book.getBookNo())
                 .title(book.getTitle())
-                .avrRating(book.getAvrRating())
+                .avrRating(book.getAvgRating())
                 .releaseDate(book.getReleaseDate())
                 .kdc(book.getKdc())
                 .returnDate(book.getReturnDate())
@@ -167,7 +167,7 @@ public class BookServiceImpl implements BookService {
         Page<Book> result = bookRepository.newest(pageable);
         List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
         return PageResponseDTO.<BookDTO>builder()
-                .total((int)result.getTotalElements())
+                .total(result.getTotalElements())
                 .dtoList(dtoList)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
@@ -181,7 +181,7 @@ public class BookServiceImpl implements BookService {
         Page<Book> result = bookRepository.search(types, q, pageRequestDTO.getRating(), pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate(), pageRequestDTO.getKdc(), pageRequestDTO.getIsbn(), pageable);
         List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
         return PageResponseDTO.<BookDTO>builder()
-                .total((int)result.getTotalElements())
+                .total(result.getTotalElements())
                 .dtoList(dtoList)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
