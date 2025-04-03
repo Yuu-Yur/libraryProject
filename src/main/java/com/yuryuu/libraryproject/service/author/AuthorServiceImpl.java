@@ -2,11 +2,15 @@ package com.yuryuu.libraryproject.service.author;
 
 import com.yuryuu.libraryproject.domain.Author;
 import com.yuryuu.libraryproject.domain.Book;
+import com.yuryuu.libraryproject.dto.PageRequestDTO;
+import com.yuryuu.libraryproject.dto.PageResponseDTO;
 import com.yuryuu.libraryproject.dto.author.AuthorDTO;
 import com.yuryuu.libraryproject.repository.author.AuthorRepository;
 import com.yuryuu.libraryproject.repository.book.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -70,5 +74,28 @@ public class AuthorServiceImpl implements AuthorService{
         Book b =bookRepository.findById(bookNo).orElseThrow(()->new EntityNotFoundException("Book not found"));
         a.getBooks().add(b);
         authorRepository.save(a);
+    }
+
+    @Override
+    public PageResponseDTO<AuthorDTO> getAuthors(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = pageRequestDTO.getPageable();
+        Page<Author> result = authorRepository.findAll(pageable);
+        Page<AuthorDTO> convertedResult = result.map(this::convertToAuthorDTO);
+        return PageResponseDTO.<AuthorDTO>builder()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(convertedResult.getContent())
+                .total(convertedResult.getTotalElements())
+                .build();
+    }
+
+    @Override
+    public PageResponseDTO<AuthorDTO> searchAuthors(PageRequestDTO pageRequestDTO) {
+        Page<Author> result = authorRepository.searchAuthors(pageRequestDTO);
+        Page<AuthorDTO> convertedResult = result.map(this::convertToAuthorDTO);
+        return PageResponseDTO.<AuthorDTO>builder()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(convertedResult.getContent())
+                .total(convertedResult.getTotalElements())
+                .build();
     }
 }

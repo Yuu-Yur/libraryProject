@@ -19,6 +19,6 @@ public class Author {
 
     @NotBlank
     private String authorName;
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private Set<Book> books;
 }

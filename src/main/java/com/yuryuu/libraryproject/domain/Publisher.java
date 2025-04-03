@@ -18,7 +18,7 @@ public class Publisher {
     private Long publisherNo;
     @NotBlank
     private String publisherName;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "publisher",fetch = FetchType.LAZY)
     private Set<Book> books;
 
     public void changeBooks(Set<Book> books) {

@@ -17,11 +17,13 @@ public class Member {
     private Long memberNo;
     private String email;
     private String password;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private Set<Reservation> reservations;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Review> reviews;
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(joinColumns = @JoinColumn(name = "member_no"),
+                inverseJoinColumns = @JoinColumn(name = "request_no"))
     private Set<Request> requests;
 
     public void reserveBook(Reservation reservation) {

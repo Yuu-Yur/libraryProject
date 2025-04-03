@@ -12,6 +12,7 @@ import com.yuryuu.libraryproject.repository.publisher.PublisherRepository;
 import com.yuryuu.libraryproject.repository.reservation.ReservationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 //
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
@@ -62,6 +64,7 @@ public class BookServiceImpl implements BookService {
                     .reservation(reservation)
                     .build();
     }
+
     private BookDTO convertToBookDTO(Book book) {
         return BookDTO.builder()
                 .bookNo(book.getBookNo())
@@ -72,8 +75,8 @@ public class BookServiceImpl implements BookService {
                 .returnDate(book.getReturnDate())
                 .authorNos(book.getAuthors().stream().map(Author::getAuthorNo).collect(Collectors.toSet()))
                 .publisherNo(book.getPublisher().getPublisherNo())
-                .memberNo(book.getMember().getMemberNo())
-                .reservationNo(book.getReservation().getReservationNo())
+                .memberNo(book.getMember() == null ? null : book.getMember().getMemberNo())
+                .reservationNo(book.getReservation() == null? null : book.getReservation().getReservationNo())
                 .build();
     }
 
@@ -143,6 +146,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public Boolean updateBook(BookDTO bookDTO) throws EntityNotFoundException {
         if (bookDTO.getBookNo() == null) return false;
         Book book = convertToBook(bookDTO);
@@ -156,12 +160,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public BookDTO getBook(Long bookNo) {
         Book book = bookRepository.findById(bookNo).orElseThrow(() ->new EntityNotFoundException("Book not found"));
         return convertToBookDTO(book);
     }
 
     @Override
+    @Transactional
     public PageResponseDTO<BookDTO> getNewBook(PageRequestDTO pageRequestDTO) {
         Pageable pageable = pageRequestDTO.getPageable();
         Page<Book> result = bookRepository.newest(pageable);
@@ -174,11 +180,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public PageResponseDTO<BookDTO> searchBooks(PageRequestDTO pageRequestDTO) {
         String[] types = pageRequestDTO.getTypes();
         String q = pageRequestDTO.getKeyword();
         Pageable pageable = pageRequestDTO.getPageable();
-        Page<Book> result = bookRepository.search(types, q, pageRequestDTO.getRating(), pageRequestDTO.getStartDate(), pageRequestDTO.getEndDate(), pageRequestDTO.getKdc(), pageRequestDTO.getIsbn(), pageable);
+        int rating = pageRequestDTO.getRating() == null ? 0 : pageRequestDTO.getRating();
+        Date sDate = pageRequestDTO.getStartDate() == null ? null : pageRequestDTO.getStartDate();
+        Date eDate = pageRequestDTO.getEndDate() == null ? null : pageRequestDTO.getEndDate();
+        String kdc = pageRequestDTO.getKdc() == null ? null : pageRequestDTO.getKdc();
+        String isbn = pageRequestDTO.getIsbn() == null ? null : pageRequestDTO.getIsbn();
+        Page<Book> result = bookRepository.search(types, q, rating, sDate, eDate, kdc, isbn, pageable);
         List<BookDTO> dtoList = result.getContent().stream().map(this::convertToBookDTO).toList();
         return PageResponseDTO.<BookDTO>builder()
                 .total(result.getTotalElements())

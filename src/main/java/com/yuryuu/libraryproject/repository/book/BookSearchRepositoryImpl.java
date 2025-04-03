@@ -44,7 +44,7 @@ public class BookSearchRepositoryImpl extends QuerydslRepositorySupport implemen
             }
         }
         if (rating > 0) {
-            booleanBuilder.and(book.avrRating.goe(rating));
+            booleanBuilder.and(book.avgRating.goe(rating));
         }
         if (startDate != null && endDate != null) {
             booleanBuilder.and(book.releaseDate.between(startDate, endDate));

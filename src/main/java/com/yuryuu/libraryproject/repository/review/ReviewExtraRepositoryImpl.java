@@ -15,8 +15,8 @@ import java.util.List;
 
 @Repository
 public class ReviewExtraRepositoryImpl extends QuerydslRepositorySupport implements ReviewExtraRepository {
-    public ReviewExtraRepositoryImpl(Class<?> domainClass) {
-        super(domainClass);
+    public ReviewExtraRepositoryImpl() {
+        super(Review.class);
     }
 
     @Override

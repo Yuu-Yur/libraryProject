@@ -25,6 +25,6 @@ public class Request {
     private String publisher;
     private Date releaseDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "requests", fetch = FetchType.LAZY)
     private Set<Member> members;
 }

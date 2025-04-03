@@ -29,11 +29,14 @@ public class Book {
     @NotBlank
     private String isbn;
 
-    private Float avgRating;
+    @Builder.Default
+    private Float avgRating = 0.0f ;
 
     private Date returnDate;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(joinColumns = @JoinColumn(name = "book_no"),
+                inverseJoinColumns = @JoinColumn(name = "author_no"))
     private Set<Author> authors;
     @ManyToOne(fetch = FetchType.LAZY)
     private Publisher publisher;
@@ -41,7 +44,7 @@ public class Book {
     private Member member;
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     private Reservation reservation;
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Review> reviews;
 
     public void changeAuthors(Set<Author> authors) {

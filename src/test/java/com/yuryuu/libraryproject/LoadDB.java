@@ -49,7 +49,7 @@ public class LoadDB {
             int counter = 0;
             while ((values = csvReader.readNext()) != null) {
                     counter++;
-                    if (counter>5) break;
+                    if (counter>100) break;
                     // CSV의 각 행을 Book 객체로 매핑
                     BookStringDTO bookStringDTO = BookStringDTO.builder()
                             .title(values[0])

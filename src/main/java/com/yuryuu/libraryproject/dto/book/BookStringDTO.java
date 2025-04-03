@@ -17,13 +17,13 @@ public class BookStringDTO {
     private String title;
     @Pattern(regexp = "^[0-9]{4}$", message = "Release date must be a 4-digit number")
     private String releaseDate;
-
+    @NotBlank
     private String kdc;
-
+    @NotBlank
     private String isbn;
 
     @Builder.Default
-    private Float avrRating = 0.0f;
+    private Float avgRating = 0.0f;
 
     @NotBlank
     private String authors;
