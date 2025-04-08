@@ -21,7 +21,7 @@ public class BookDTO {
     private String title;
     @Builder.Default
     private Float avrRating = 0.0f;
-    @NotBlank
+    @NotNull
     private Date releaseDate;
     @NotBlank
     private String kdc;

@@ -1,4 +1,4 @@
-package com.yuryuu.libraryproject.service;
+package com.yuryuu.libraryproject.service.review;
 
 import com.yuryuu.libraryproject.dto.PageRequestDTO;
 import com.yuryuu.libraryproject.dto.PageResponseDTO;

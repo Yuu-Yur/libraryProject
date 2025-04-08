@@ -42,7 +42,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Boolean editReservation(ReservationDTO reservationDTO) {
+    public Boolean updateReservation(ReservationDTO reservationDTO) {
         if (reservationDTO.getReservationNo() == null) return false;
         Reservation reservation = convertToReservation(reservationDTO);
         Reservation result = reservationRepository.save(reservation);

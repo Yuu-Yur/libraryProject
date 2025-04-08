@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,19 +43,45 @@ public class AuthorServiceImpl implements AuthorService{
     }
 
     @Override
-    public Boolean addAuthor(AuthorDTO authorDTO) {
-        if (authorDTO.getAuthorNo() != null) return false;
-        Author author = convertToAuthor(authorDTO);
-        Author result = authorRepository.save(author);
-        return result.getAuthorName().equals(authorDTO.getAuthorName());
+    public AuthorDTO addAuthor(AuthorDTO authorDTO) {
+        if (authorDTO.getAuthorNo() != null) return null;
+        Author result = authorRepository.save(convertToAuthor(authorDTO));
+        if (!authorDTO.getBookNos().isEmpty()) {
+            Set<Book> books = new HashSet<>(bookRepository.findAllById(authorDTO.getBookNos()));
+            for (Book book : books) {
+                book.getAuthors().add(result);
+            }
+            bookRepository.saveAll(books);
+        }
+        return convertToAuthorDTO(result);
     }
 
     @Override
+    @Transactional
     public Boolean updateAuthor(AuthorDTO authorDTO) {
         if (authorDTO.getAuthorNo() == null) return false;
-        Author author = convertToAuthor(authorDTO);
-        Author result = authorRepository.save(author);
-        return result.getAuthorName().equals(authorDTO.getAuthorName());
+
+        // 1. 기존 author 조회
+        Author author = authorRepository.findById(authorDTO.getAuthorNo())
+                .orElseThrow(() -> new EntityNotFoundException("Author not found"));
+
+        // 2. 필드 수정
+        author.setAuthorName(authorDTO.getAuthorName());
+
+        // 3. 기존 book 관계 제거
+        for (Book book : new HashSet<>(author.getBooks())) {
+            book.getAuthors().remove(author);
+        }
+        author.getBooks().clear();
+
+        // 4. 새 book 관계 추가
+        Set<Book> newBooks = new HashSet<>(bookRepository.findAllById(authorDTO.getBookNos()));
+        for (Book book : newBooks) {
+            author.getBooks().add(book);
+            book.getAuthors().add(author);
+        }
+
+        return true;
     }
 
     @Override
@@ -63,17 +90,10 @@ public class AuthorServiceImpl implements AuthorService{
     }
 
     @Override
+    @Transactional
     public AuthorDTO getAuthor(Long authorNo) {
         Author author = authorRepository.findById(authorNo).orElseThrow(() ->new EntityNotFoundException("Author not found"));
         return convertToAuthorDTO(author);
-    }
-
-    @Override
-    public void addBookToAuthor(Long authorNo, Long bookNo) {
-        Author a =authorRepository.findById(authorNo).orElseThrow(()->new EntityNotFoundException("Author not found"));
-        Book b =bookRepository.findById(bookNo).orElseThrow(()->new EntityNotFoundException("Book not found"));
-        a.getBooks().add(b);
-        authorRepository.save(a);
     }
 
     @Override
@@ -97,5 +117,16 @@ public class AuthorServiceImpl implements AuthorService{
                 .dtoList(convertedResult.getContent())
                 .total(convertedResult.getTotalElements())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void setBookAuthor(Long authorNo, Long bookNo) {
+        Author author = authorRepository.findById(authorNo).orElseThrow(() ->new EntityNotFoundException("Author not found"));
+        Book book = bookRepository.findById(bookNo).orElseThrow(() ->new EntityNotFoundException("Book not found"));
+        author.getBooks().add(book);
+        book.getAuthors().add(author);
+        authorRepository.save(author);
+        bookRepository.save(book);
     }
 }

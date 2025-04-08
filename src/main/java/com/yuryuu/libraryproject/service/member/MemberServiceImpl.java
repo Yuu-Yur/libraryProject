@@ -11,7 +11,9 @@ import com.yuryuu.libraryproject.repository.reservation.ReservationRepository;
 import com.yuryuu.libraryproject.repository.review.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,11 +21,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class MemberServiceImpl implements MemberService {
-    MemberRepository memberRepository;
-    RequestRepository requestRepository;
-    ReviewRepository reviewRepository;
-    ReservationRepository reservationRepository;
+    private final MemberRepository memberRepository;
+    private final RequestRepository requestRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReservationRepository reservationRepository;
 
     private Member dtoToEntity(MemberDTO memberDTO) {
         Set<Request> requests = (memberDTO.getRequestNos() != null && !memberDTO.getRequestNos().isEmpty())
@@ -58,6 +61,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
     @Override
+    @Transactional
     public Boolean addMember(MemberDTO memberDTO) {
         if (memberDTO.getMemberNo() != null) return false;
         Member result = memberRepository.save(dtoToEntity(memberDTO));

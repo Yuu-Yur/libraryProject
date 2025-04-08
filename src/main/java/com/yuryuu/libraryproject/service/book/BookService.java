@@ -12,4 +12,6 @@ public interface BookService {
     public BookDTO getBook(Long bookNo); // 책 상세 정보 반환 예정
     public PageResponseDTO<BookDTO> getNewBook(PageRequestDTO pageRequestDTO); // 신간만이면 될듯
     public PageResponseDTO<BookDTO> searchBooks(PageRequestDTO pageRequestDTO); // 검색
+    public Boolean borrowBook(Long bookNo, Long memberNo);
+    public Boolean returnBook(Long bookNo, Long memberNo);
 }

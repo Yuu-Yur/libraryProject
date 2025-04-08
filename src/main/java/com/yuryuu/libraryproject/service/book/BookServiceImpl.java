@@ -57,6 +57,7 @@ public class BookServiceImpl implements BookService {
                     .avgRating(bookDTO.getAvrRating())
                     .releaseDate(bookDTO.getReleaseDate())
                     .kdc(bookDTO.getKdc())
+                    .isbn(bookDTO.getIsbn())
                     .returnDate(bookDTO.getReturnDate())
                     .authors(authors)
                     .publisher(publisher)
@@ -72,6 +73,7 @@ public class BookServiceImpl implements BookService {
                 .avrRating(book.getAvgRating())
                 .releaseDate(book.getReleaseDate())
                 .kdc(book.getKdc())
+                .isbn(book.getIsbn())
                 .returnDate(book.getReturnDate())
                 .authorNos(book.getAuthors().stream().map(Author::getAuthorNo).collect(Collectors.toSet()))
                 .publisherNo(book.getPublisher().getPublisherNo())
@@ -197,5 +199,38 @@ public class BookServiceImpl implements BookService {
                 .dtoList(dtoList)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public Boolean borrowBook(Long bookNo, Long memberNo) {
+        Book book = bookRepository.findById(bookNo).orElseThrow(() ->new EntityNotFoundException("Book not found"));
+        Member member = memberRepository.findById(memberNo).orElseThrow(() ->new EntityNotFoundException("Member not found"));
+        if (book.getReturnDate() != null) return false;
+        if (book.getReservation() != null) {
+            if (book.getReservation().getMember().getMemberNo().equals(memberNo)) {
+                book.resetBookReservation();
+                book.borrowBook(member, new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000));
+                bookRepository.save(book);
+                return true;
+            }
+            return false;
+        }
+        book.borrowBook(member, new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000));
+        bookRepository.save(book);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public Boolean returnBook(Long bookNo, Long memberNo) {
+        Book book = bookRepository.findById(bookNo).orElseThrow(() ->new EntityNotFoundException("Book not found"));
+        Member member = memberRepository.findById(memberNo).orElseThrow(() ->new EntityNotFoundException("Member not found"));
+        long diff = new Date(System.currentTimeMillis()).getTime() - book.getReturnDate().getTime();
+        if (diff > 0) {
+            return false;
+        }
+        book.returnBook();
+        return true;
     }
 }
